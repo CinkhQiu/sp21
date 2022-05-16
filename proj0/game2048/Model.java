@@ -5,7 +5,7 @@ import java.util.Observable;
 
 
 /** The state of a game of 2048.
- *  @author TODO: YOUR NAME HERE
+ *  @author TODO: CinkhQ
  */
 public class Model extends Observable {
     /** Current contents of the board. */
@@ -138,6 +138,11 @@ public class Model extends Observable {
      * */
     public static boolean emptySpaceExists(Board b) {
         // TODO: Fill in this function.
+        int size = b.size();
+        for (int col = 0; col < size; ++col)
+            for (int row = 0; row < size; ++row)
+                if (b.tile(col, row) == null)
+                    return true;
         return false;
     }
 
@@ -148,6 +153,16 @@ public class Model extends Observable {
      */
     public static boolean maxTileExists(Board b) {
         // TODO: Fill in this function.
+        int size = b.size();
+        for (int col = 0; col < size; col++) {
+            for (int row = 0; row < size; row++) {
+                Tile t = b.tile(col, row);
+                // only when t != null should we check t.value()
+                if (t != null && t.value() == MAX_PIECE) {
+                    return true;
+                }
+            }
+        }
         return false;
     }
 
@@ -158,7 +173,31 @@ public class Model extends Observable {
      * 2. There are two adjacent tiles with the same value.
      */
     public static boolean atLeastOneMoveExists(Board b) {
-        // TODO: Fill in this function.
+        if (emptySpaceExists(b)) {
+            return true;
+        }
+        // 4 directions, LEFT/UP/RIGHT/DOWN
+        int[] dx = {0, -1, 0, 1};
+        int[] dy = {-1, 0, 1, 0};
+
+        int size = b.size();
+        for (int col = 0; col < size; col++) {
+            for (int row = 0; row < size; row++) {
+                // Because we have checked emptySpace, t.values() must exist
+                int curTileValue = b.tile(col, row).value();
+                for (int move = 0; move < 4; move++) {
+                    int colNew = col + dx[move];
+                    int rowNew = row + dy[move];
+                    // make sure the tile is within the boundary
+                    if (colNew > 0 && colNew < size && rowNew > 0 && rowNew < size) {
+                        Tile newTile = b.tile(colNew, rowNew);
+                        if (newTile.value() == curTileValue) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
         return false;
     }
 
